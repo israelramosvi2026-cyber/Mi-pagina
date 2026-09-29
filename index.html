@@ -1,18 +1,644 @@
 <!DOCTYPE html>
-<html lang="es-ES">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Calculadora de Sistemas Numéricos</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and glow effects */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .btn-calc {
+            transition: all 0.15s ease-in-out;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .btn-calc:active {
+            transform: scale(0.95);
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px -5px rgba(59, 130, 246, 0.3);
+        }
+    </style>
 </head>
-<body>
-    
-<div class="contenedor">
-    <h1>HOLA Loconemi</h1>
-    <P>Vamos a tomar unas cervecitas</P>
-    <a href="#" class="boton-redireccion">Toca aqui para comprar cervesas</a>
-</div>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white">
 
+    <!-- Header -->
+    <header class="w-full border-b border-slate-800/80 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="showWelcomeScreen()">
+                <div class="p-2 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/20">
+                    <i class="fa-solid fa-calculator text-xl text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">NumBase Pro</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Calculadora Multibase & Conversión</p>
+                </div>
+            </div>
+            
+            <div id="headerBaseBadge" class="hidden items-center space-x-2 bg-slate-800/80 border border-slate-700/60 px-3 py-1.5 rounded-full text-xs font-semibold text-blue-400">
+                <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                <span id="currentBaseName">Base Decimal</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-6 my-auto">
+        
+        <!-- PANTALLA DE BIENVENIDA / SELECCIÓN -->
+        <section id="welcomeScreen" class="w-full max-w-4xl py-6 animate-fade-in">
+            <div class="text-center mb-10">
+                <span class="px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold rounded-full uppercase tracking-wider">
+                    Conversión y Aritmética
+                </span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold mt-4 text-white tracking-tight">
+                    Selecciona tu <span class="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Sistema Numérico</span>
+                </h2>
+                <p class="text-slate-400 mt-3 text-sm sm:text-base max-w-xl mx-auto">
+                    Elige el sistema base con el que deseas trabajar. Podrás realizar operaciones matemáticas y obtener conversiones en tiempo real a otras bases.
+                </p>
+            </div>
+
+            <!-- Grilla de Tarjetas -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                
+                <!-- Decimal -->
+                <button onclick="selectBase('DEC')" class="group relative bg-slate-900/90 hover:bg-slate-800/80 border border-slate-800 hover:border-blue-500/50 rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                            <span class="font-mono font-bold text-lg">10</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">Decimal</h3>
+                        <p class="text-xs text-slate-400 mt-2">Base 10 (Dígitos: 0 - 9). El sistema matemático habitual.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-xs font-semibold text-blue-400 group-hover:translate-x-1 transition-transform">
+                        <span>Calcular en Decimal</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
+                </button>
+
+                <!-- Binario -->
+                <button onclick="selectBase('BIN')" class="group relative bg-slate-900/90 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                            <span class="font-mono font-bold text-lg">01</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Binario</h3>
+                        <p class="text-xs text-slate-400 mt-2">Base 2 (Dígitos: 0, 1). Usado en informática y sistemas digitales.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-xs font-semibold text-emerald-400 group-hover:translate-x-1 transition-transform">
+                        <span>Calcular en Binario</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
+                </button>
+
+                <!-- Octal -->
+                <button onclick="selectBase('OCT')" class="group relative bg-slate-900/90 hover:bg-slate-800/80 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                            <span class="font-mono font-bold text-lg">08</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-amber-400 transition-colors">Octal</h3>
+                        <p class="text-xs text-slate-400 mt-2">Base 8 (Dígitos: 0 - 7). Utilizado en computación e ingeniería.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-xs font-semibold text-amber-400 group-hover:translate-x-1 transition-transform">
+                        <span>Calcular en Octal</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
+                </button>
+
+                <!-- Hexadecimal -->
+                <button onclick="selectBase('HEX')" class="group relative bg-slate-900/90 hover:bg-slate-800/80 border border-slate-800 hover:border-purple-500/50 rounded-2xl p-6 text-left transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-purple-500/10 flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
+                            <span class="font-mono font-bold text-lg">16</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white group-hover:text-purple-400 transition-colors">Hexadecimal</h3>
+                        <p class="text-xs text-slate-400 mt-2">Base 16 (Dígitos: 0-9, A-F). Amplio uso en diseño de software y direcciones de memoria.</p>
+                    </div>
+                    <div class="mt-6 flex items-center text-xs font-semibold text-purple-400 group-hover:translate-x-1 transition-transform">
+                        <span>Calcular en Hexadecimal</span>
+                        <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </div>
+                </button>
+
+            </div>
+        </section>
+
+        <!-- PANTALLA DE CALCULADORA -->
+        <section id="calculatorScreen" class="hidden w-full max-w-4xl py-2">
+            
+            <!-- Barra superior con botón volver -->
+            <div class="flex items-center justify-between mb-4">
+                <button onclick="showWelcomeScreen()" class="flex items-center space-x-2 text-slate-400 hover:text-white bg-slate-900 hover:bg-slate-800 border border-slate-800 px-4 py-2 rounded-xl text-xs font-medium transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Volver al menú</span>
+                </button>
+                <div class="text-xs text-slate-400 font-medium">
+                    Base actual: <span id="calcBaseLabel" class="text-blue-400 font-bold">DECIMAL</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                <!-- Columna Izquierda: Calculadora -->
+                <div class="lg:col-span-7 bg-slate-900/90 border border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl relative overflow-hidden glow-effect">
+                    
+                    <!-- Pantalla de Display de la Calculadora -->
+                    <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 mb-5 shadow-inner">
+                        <div id="calcHistory" class="text-slate-500 font-mono text-xs sm:text-sm text-right h-6 overflow-x-auto whitespace-nowrap scrollbar-none">
+                            &nbsp;
+                        </div>
+                        <div id="calcDisplay" class="text-2xl sm:text-4xl font-mono font-bold text-right text-white tracking-wider overflow-x-auto whitespace-nowrap py-1">
+                            0
+                        </div>
+                    </div>
+
+                    <!-- Mensaje de error/alerta silencioso -->
+                    <div id="calcAlert" class="hidden mb-3 text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-lg text-center font-medium">
+                        Entrada no válida
+                    </div>
+
+                    <!-- Botones de la Calculadora -->
+                    <div class="grid grid-cols-4 gap-2 sm:gap-2.5">
+                        
+                        <!-- Fila 1: Teclas HEX superiores + Funciones -->
+                        <button id="btnA" onclick="appendInput('A')" class="btn-calc bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-purple-300 font-mono font-bold py-3 rounded-xl border border-slate-700/50">A</button>
+                        <button id="btnB" onclick="appendInput('B')" class="btn-calc bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-purple-300 font-mono font-bold py-3 rounded-xl border border-slate-700/50">B</button>
+                        <button onclick="clearAll()" class="btn-calc bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-semibold py-3 rounded-xl border border-rose-500/30">AC</button>
+                        <button onclick="backspace()" class="btn-calc bg-slate-800/80 hover:bg-slate-700 text-slate-300 font-semibold py-3 rounded-xl border border-slate-700/50">
+                            <i class="fa-solid fa-backspace"></i>
+                        </button>
+
+                        <!-- Fila 2: Teclas HEX + Operadores -->
+                        <button id="btnC" onclick="appendInput('C')" class="btn-calc bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-purple-300 font-mono font-bold py-3 rounded-xl border border-slate-700/50">C</button>
+                        <button id="btnD" onclick="appendInput('D')" class="btn-calc bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-purple-300 font-mono font-bold py-3 rounded-xl border border-slate-700/50">D</button>
+                        <button id="btnE" onclick="appendInput('E')" class="btn-calc bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-purple-300 font-mono font-bold py-3 rounded-xl border border-slate-700/50">E</button>
+                        <button onclick="setOperator('÷')" class="btn-calc bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-bold py-3 rounded-xl border border-blue-500/30">÷</button>
+
+                        <!-- Fila 3: Num 7, 8, 9, Hex F, Multiplicación -->
+                        <button id="btn7" onclick="appendInput('7')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">7</button>
+                        <button id="btn8" onclick="appendInput('8')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">8</button>
+                        <button id="btn9" onclick="appendInput('9')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">9</button>
+                        <button onclick="setOperator('×')" class="btn-calc bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-bold py-3 rounded-xl border border-blue-500/30">×</button>
+
+                        <!-- Fila 4: Num 4, 5, 6, Resta -->
+                        <button id="btn4" onclick="appendInput('4')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">4</button>
+                        <button id="btn5" onclick="appendInput('5')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">5</button>
+                        <button id="btn6" onclick="appendInput('6')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">6</button>
+                        <button onclick="setOperator('-')" class="btn-calc bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-bold py-3 rounded-xl border border-blue-500/30">-</button>
+
+                        <!-- Fila 5: Num 1, 2, 3, Suma -->
+                        <button id="btn1" onclick="appendInput('1')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">1</button>
+                        <button id="btn2" onclick="appendInput('2')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">2</button>
+                        <button id="btn3" onclick="appendInput('3')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">3</button>
+                        <button onclick="setOperator('+')" class="btn-calc bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 font-bold py-3 rounded-xl border border-blue-500/30">+</button>
+
+                        <!-- Fila 6: Num 0, Hex F, Igual -->
+                        <button id="btnF" onclick="appendInput('F')" class="btn-calc bg-slate-800/80 hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed text-purple-300 font-mono font-bold py-3 rounded-xl border border-slate-700/50">F</button>
+                        <button id="btn0" onclick="appendInput('0')" class="btn-calc bg-slate-800/50 hover:bg-slate-700/80 disabled:opacity-30 disabled:cursor-not-allowed text-white font-mono font-bold py-3 rounded-xl border border-slate-700/40">0</button>
+                        <button onclick="calculateResult()" class="col-span-2 btn-calc bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-blue-600/30">
+                            =
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Columna Derecha: Conversión en Tiempo Real -->
+                <div class="lg:col-span-5 space-y-3">
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                                <i class="fa-solid fa-arrows-rotate text-blue-400"></i> Conversión en Vivo
+                            </h3>
+                            <span class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full">Equivalencias</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <!-- Conversión Decimal -->
+                            <div id="cardConvDEC" class="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 transition-all">
+                                <div class="flex justify-between items-center text-xs text-slate-400 mb-1">
+                                    <span class="font-semibold text-blue-400">DECIMAL (Base 10)</span>
+                                    <button onclick="copyToClipboard('convDEC')" class="text-slate-500 hover:text-white transition-colors" title="Copiar">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div id="convDEC" class="font-mono text-base font-semibold text-white break-all">0</div>
+                            </div>
+
+                            <!-- Conversión Binario -->
+                            <div id="cardConvBIN" class="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 transition-all">
+                                <div class="flex justify-between items-center text-xs text-slate-400 mb-1">
+                                    <span class="font-semibold text-emerald-400">BINARIO (Base 2)</span>
+                                    <button onclick="copyToClipboard('convBIN')" class="text-slate-500 hover:text-white transition-colors" title="Copiar">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div id="convBIN" class="font-mono text-base font-semibold text-white break-all">0</div>
+                            </div>
+
+                            <!-- Conversión Octal -->
+                            <div id="cardConvOCT" class="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 transition-all">
+                                <div class="flex justify-between items-center text-xs text-slate-400 mb-1">
+                                    <span class="font-semibold text-amber-400">OCTAL (Base 8)</span>
+                                    <button onclick="copyToClipboard('convOCT')" class="text-slate-500 hover:text-white transition-colors" title="Copiar">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div id="convOCT" class="font-mono text-base font-semibold text-white break-all">0</div>
+                            </div>
+
+                            <!-- Conversión Hexadecimal -->
+                            <div id="cardConvHEX" class="p-3.5 rounded-2xl bg-slate-950/60 border border-slate-800/80 transition-all">
+                                <div class="flex justify-between items-center text-xs text-slate-400 mb-1">
+                                    <span class="font-semibold text-purple-400">HEXADECIMAL (Base 16)</span>
+                                    <button onclick="copyToClipboard('convHEX')" class="text-slate-500 hover:text-white transition-colors" title="Copiar">
+                                        <i class="fa-regular fa-copy"></i>
+                                    </button>
+                                </div>
+                                <div id="convHEX" class="font-mono text-base font-semibold text-white break-all">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cuadro de Información de la base seleccionada -->
+                    <div class="bg-blue-950/20 border border-blue-900/30 rounded-2xl p-4 text-xs text-slate-400 leading-relaxed">
+                        <span id="baseInfoText">
+                            Estás trabajando en el sistema decimal. Todos los valores ingresados y resultados se procesan en base 10.
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500">
+        <p>Calculadora Numérica de 4 Sistemas Base • Desarrollado para VS Code & Web</p>
+    </footer>
+
+    <!-- Toast de Notificación -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-slate-800 text-white border border-slate-700 px-4 py-2.5 rounded-xl shadow-2xl text-xs flex items-center space-x-2 transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-50">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">Copiado al portapapeles</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // State Variables
+        let currentBase = 'DEC'; // DEC, BIN, OCT, HEX
+        let currentInput = '0';
+        let previousInput = null;
+        let selectedOperator = null;
+        let shouldResetDisplay = false;
+
+        // Base Rules Mapping
+        const baseConfigs = {
+            'DEC': {
+                name: 'Base Decimal',
+                radix: 10,
+                allowedKeys: ['0','1','2','3','4','5','6','7','8','9'],
+                info: 'Sistema Decimal (Base 10): Utiliza dígitos del 0 al 9.'
+            },
+            'BIN': {
+                name: 'Base Binaria',
+                radix: 2,
+                allowedKeys: ['0','1'],
+                info: 'Sistema Binario (Base 2): Utiliza únicamente los dígitos 0 y 1.'
+            },
+            'OCT': {
+                name: 'Base Octal',
+                radix: 8,
+                allowedKeys: ['0','1','2','3','4','5','6','7'],
+                info: 'Sistema Octal (Base 8): Utiliza dígitos del 0 al 7.'
+            },
+            'HEX': {
+                name: 'Base Hexadecimal',
+                radix: 16,
+                allowedKeys: ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'],
+                info: 'Sistema Hexadecimal (Base 16): Utiliza dígitos del 0-9 y letras A-F.'
+            }
+        };
+
+        // DOM Element References
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const calculatorScreen = document.getElementById('calculatorScreen');
+        const headerBaseBadge = document.getElementById('headerBaseBadge');
+        const currentBaseName = document.getElementById('currentBaseName');
+        const calcBaseLabel = document.getElementById('calcBaseLabel');
+        const calcDisplay = document.getElementById('calcDisplay');
+        const calcHistory = document.getElementById('calcHistory');
+        const baseInfoText = document.getElementById('baseInfoText');
+
+        // Screen Navigation Functions
+        function selectBase(base) {
+            currentBase = base;
+            resetCalculatorState();
+            updateBaseUI();
+
+            welcomeScreen.classList.add('hidden');
+            calculatorScreen.classList.remove('hidden');
+            headerBaseBadge.classList.remove('hidden');
+            headerBaseBadge.classList.add('flex');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showWelcomeScreen() {
+            calculatorScreen.classList.add('hidden');
+            headerBaseBadge.classList.add('hidden');
+            headerBaseBadge.classList.remove('flex');
+            welcomeScreen.classList.remove('hidden');
+        }
+
+        // Configure UI buttons based on selected base
+        function updateBaseUI() {
+            const config = baseConfigs[currentBase];
+            currentBaseName.textContent = config.name;
+            calcBaseLabel.textContent = currentBase;
+            baseInfoText.textContent = config.info;
+
+            // List of all keys to toggle
+            const allKeys = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'];
+
+            allKeys.forEach(key => {
+                const btn = document.getElementById(`btn${key}`);
+                if (btn) {
+                    const isAllowed = config.allowedKeys.includes(key);
+                    btn.disabled = !isAllowed;
+                    if (!isAllowed) {
+                        btn.classList.add('opacity-30', 'cursor-not-allowed');
+                    } else {
+                        btn.classList.remove('opacity-30', 'cursor-not-allowed');
+                    }
+                }
+            });
+
+            // Highlight active conversion card
+            ['DEC', 'BIN', 'OCT', 'HEX'].forEach(b => {
+                const card = document.getElementById(`cardConv${b}`);
+                if (b === currentBase) {
+                    card.classList.add('ring-2', 'ring-blue-500', 'bg-slate-900');
+                    card.classList.remove('bg-slate-950/60');
+                } else {
+                    card.classList.remove('ring-2', 'ring-blue-500', 'bg-slate-900');
+                    card.classList.add('bg-slate-950/60');
+                }
+            });
+        }
+
+        // Reset state
+        function resetCalculatorState() {
+            currentInput = '0';
+            previousInput = null;
+            selectedOperator = null;
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        // Calculator Input Actions
+        function appendInput(char) {
+            const config = baseConfigs[currentBase];
+            if (!config.allowedKeys.includes(char)) return;
+
+            if (currentInput === '0' || shouldResetDisplay) {
+                currentInput = char;
+                shouldResetDisplay = false;
+            } else {
+                // Limit maximum length to prevent overflow
+                if (currentInput.length < 16) {
+                    currentInput += char;
+                }
+            }
+            updateDisplay();
+        }
+
+        function clearAll() {
+            resetCalculatorState();
+        }
+
+        function backspace() {
+            if (shouldResetDisplay) return;
+            
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        function setOperator(op) {
+            if (selectedOperator !== null && !shouldResetDisplay) {
+                calculateResult();
+            }
+            previousInput = currentInput;
+            selectedOperator = op;
+            shouldResetDisplay = true;
+            updateHistory();
+        }
+
+        function calculateResult() {
+            if (selectedOperator === null || previousInput === null) return;
+
+            const radix = baseConfigs[currentBase].radix;
+            const num1 = parseInt(previousInput, radix);
+            const num2 = parseInt(currentInput, radix);
+
+            if (isNaN(num1) || isNaN(num2)) {
+                showAlert('Error en la entrada');
+                return;
+            }
+
+            let result = 0;
+
+            switch (selectedOperator) {
+                case '+':
+                    result = num1 + num2;
+                    break;
+                case '-':
+                    result = num1 - num2;
+                    break;
+                case '×':
+                    result = num1 * num2;
+                    break;
+                case '÷':
+                    if (num2 === 0) {
+                        showAlert('No se puede dividir por cero');
+                        return;
+                    }
+                    result = Math.floor(num1 / num2); // Division entera para bases numericas
+                    break;
+            }
+
+            // Handle negative numbers or formatting
+            if (result < 0) {
+                // Representing negative in base or simple minus sign
+                currentInput = '-' + Math.abs(result).toString(radix).toUpperCase();
+            } else {
+                currentInput = result.toString(radix).toUpperCase();
+            }
+
+            calcHistory.textContent = `${previousInput} ${selectedOperator} ${currentInput} =`;
+            previousInput = null;
+            selectedOperator = null;
+            shouldResetDisplay = true;
+
+            updateDisplay(false);
+        }
+
+        // UI Render and Conversion updates
+        function updateDisplay(updateHist = true) {
+            calcDisplay.textContent = currentInput;
+
+            if (updateHist) {
+                updateHistory();
+            }
+
+            updateLiveConversions();
+        }
+
+        function updateHistory() {
+            if (selectedOperator && previousInput !== null) {
+                calcHistory.textContent = `${previousInput} ${selectedOperator}`;
+            } else if (!calcHistory.textContent.includes('=')) {
+                calcHistory.innerHTML = '&nbsp;';
+            }
+        }
+
+        function updateLiveConversions() {
+            const radix = baseConfigs[currentBase].radix;
+            let cleanInput = currentInput.replace('-', '');
+            let isNegative = currentInput.startsWith('-');
+
+            let decimalValue = parseInt(cleanInput, radix);
+
+            if (isNaN(decimalValue)) {
+                document.getElementById('convDEC').textContent = '0';
+                document.getElementById('convBIN').textContent = '0';
+                document.getElementById('convOCT').textContent = '0';
+                document.getElementById('convHEX').textContent = '0';
+                return;
+            }
+
+            const prefix = isNegative ? '-' : '';
+
+            document.getElementById('convDEC').textContent = prefix + decimalValue.toString(10);
+            document.getElementById('convBIN').textContent = prefix + decimalValue.toString(2);
+            document.getElementById('convOCT').textContent = prefix + decimalValue.toString(8);
+            document.getElementById('convHEX').textContent = prefix + decimalValue.toString(16).toUpperCase();
+        }
+
+        // Helper Notifications
+        function showAlert(msg) {
+            const alertEl = document.getElementById('calcAlert');
+            alertEl.textContent = msg;
+            alertEl.classList.remove('hidden');
+            setTimeout(() => {
+                alertEl.classList.add('hidden');
+            }, 3000);
+        }
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            
+            // Clipboard copy fallbacks
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text);
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+            }
+
+            showToast(`Copiado: ${text}`);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            toastMsg.textContent = message;
+
+            toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+            }, 2500);
+        }
+
+        // Keyboard Listener
+        document.addEventListener('keydown', (e) => {
+            if (calculatorScreen.classList.contains('hidden')) return;
+
+            const key = e.key.toUpperCase();
+
+            if (key === 'ENTER' || key === '=') {
+                e.preventDefault();
+                calculateResult();
+            } else if (key === 'ESCAPE') {
+                clearAll();
+            } else if (key === 'BACKSPACE') {
+                backspace();
+            } else if (['+', '-', '*', '/'].includes(key)) {
+                e.preventDefault();
+                const opMap = { '+': '+', '-': '-', '*': '×', '/': '÷' };
+                setOperator(opMap[key]);
+            } else {
+                const config = baseConfigs[currentBase];
+                if (config.allowedKeys.includes(key)) {
+                    appendInput(key);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
